@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8">
+</head>
+<body>
+<img src="3.jpg" style="display: none">
+<canvas id="canvas" style="border:1px solid #d3d3d3;background:#ffffff;"></canvas>
+</body>
+<script type="text/javascript">
+	window.addEventListener('load',main,false);
+	var tools={
+		dealData:function(imgData,width,height) {
+		var tempData=[];
+		for (var i = imgData.length; i >= 0; i--) {
+			tempData[i]=imgData[i]>>1<<1;
+		}
+		//console.log(imgData);
+		return tempData;
+	},
+		getString2:function(string){
+		var binaryArray=[];
+		for (var i = 0; i <string.length; i++) {
+			var binary=string.charCodeAt(i).toString(2);
+			if (binary.length<16) {
+				for (var m = 16-binary.length; m > 0; m--) {
+					binary='0'+binary
+				}
+			}
+			binaryArray.push(binary);
+		}
+		return binaryArray;
+	},	
+		encodeS:function(imgData,binaryArray){
+		var tempData=[];
+		if (binaryArray.length*16>imgData.length) {
+			console.log("failed");
+			return;
+		}
+		else{
+			for (var i =0; i < binaryArray.length  ;i++) {
+				for (var k = 0; k <binaryArray[i].length; k++) {
+					tempData[i*16+k]=imgData[i*16+k]+parseInt(binaryArray[i][k]);
+				}
+			}
+		}
+		//console.log(imgData.data);
+		return tempData;
+	},
+		decodeS:function(oldData,newData) {
+		var temp="";
+		var tempArray=[];
+		for (var i = 0; i < oldData.length; i++) {
+			temp+=newData[i]-oldData[i];
+			if (isNaN(temp)) {
+				break;
+			}
+			if ((i+1)%16==0) {
+				tempArray.push(temp);
+				temp="";
+			}
+		}
+	//	console.log(tempArray);
+		var result="";
+		for (var m = 0; m < tempArray.length; m++) {
+			result+=String.fromCharCode(parseInt(tempArray[m],2));
+		}
+		console.log(result);
+	}
+	};
+	var saveFile = function(data, filename){
+	    var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+	    save_link.href = data;
+	    save_link.download = filename;
+	   
+	    var event = document.createEvent('MouseEvents');
+	    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	    save_link.dispatchEvent(event);
+	};
+	function main(){
+		var image=new Image();
+		image.src="3.jpg";
+		var canvas=document.querySelector("#canvas");
+		var ctx=canvas.getContext("2d");
+		canvas.width=image.width;
+		canvas.height=image.height;
+		ctx.drawImage(image,0,0);
+		var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+		var oriData=imageData.data;
+		var oldData=dealData(oriData,canvas.width,canvas.height);
+		var newData=encodeS(oldData,getString2("你进制转二进制dasdsd:@3 231"));
+		imageData.data=newData;
+		ctx.putImageData(imageData,0,0);
+		decodeS(oldData,newData);
+		var outdata=canvas.toDataURL("image/png");
+		var _fixType = function(type) {
+		    type = type.toLowerCase().replace(/jpg/i, 'jpeg');
+		    var r = type.match(/png|jpeg|bmp|gif/)[0];
+		    return 'image/' + r;
+		};
+		outdata=outdata.replace(_fixType('png'),'image/octet-stream'); 
+		var filename = 'pic_' + (new Date()).getTime() + '.png' ;
+		saveFile(outdata,filename);
+	}
+	
+</script>
+</html>
