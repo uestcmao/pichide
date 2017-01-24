@@ -88,11 +88,11 @@
 		ctx.drawImage(image,0,0);
 		var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
 		var oriData=imageData.data;
-		var oldData=dealData(oriData,canvas.width,canvas.height);
-		var newData=encodeS(oldData,getString2("你进制转二进制dasdsd:@3 231"));
+		var oldData=tools.dealData(oriData,canvas.width,canvas.height);
+		var newData=tools.encodeS(oldData,tools.getString2("你进制转二进制dasdsd:@3 231"));
 		imageData.data=newData;
 		ctx.putImageData(imageData,0,0);
-		decodeS(oldData,newData);
+		tools.decodeS(oldData,newData);
 		var outdata=canvas.toDataURL("image/png");
 		var _fixType = function(type) {
 		    type = type.toLowerCase().replace(/jpg/i, 'jpeg');
